@@ -254,7 +254,7 @@ export default function CartDrawer({
 
                 {/* Cart list */}
                 <div className="flex-1 overflow-y-auto divide-y divide-gray-100 p-4 space-y-4">
-                  {cartItems.map((item, index) => {
+                  {(Array.isArray(cartItems) ? cartItems : []).map((item, index) => {
                     const price = item.product.discountPrice || item.product.salePrice;
                     return (
                       <div key={`${item.product.id}-${item.variantName || index}`} className="flex gap-3 pt-4 first:pt-0">
@@ -408,7 +408,7 @@ export default function CartDrawer({
                       className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-xs outline-none bg-white focus:border-emerald-500"
                     >
                       <option value="">-- Choose Area --</option>
-                      {deliveryAreas.map(area => (
+                      {(Array.isArray(deliveryAreas) ? deliveryAreas : []).map(area => (
                         <option key={area.id} value={area.id}>
                           {area.city} - {area.areaName} (Rs. {area.charges})
                         </option>

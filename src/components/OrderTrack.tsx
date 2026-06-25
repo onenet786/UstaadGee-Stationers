@@ -303,7 +303,7 @@ export default function OrderTrack({ initialOrderNumber = '' }: OrderTrackProps)
               </h4>
 
               <div className="divide-y divide-gray-50 max-h-96 overflow-y-auto pr-1">
-                {items.map((it) => (
+                {(Array.isArray(items) ? items : []).map((it) => (
                   <div key={it.id} className="flex gap-3 py-3 first:pt-0">
                     <div className="flex-1">
                       <h5 className="text-xs font-bold text-gray-800 leading-tight">

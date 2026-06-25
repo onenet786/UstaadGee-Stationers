@@ -860,8 +860,8 @@ apiRouter.delete('/admin/products/:id', requireAdmin, async (req: AuthenticatedR
 });
 
 // Admin Categories CRUD
-apiRouter.get('/admin/categories', requireAdmin, (req, res) => {
-  res.json(db.categories.findManyWithInactive());
+apiRouter.get('/admin/categories', requireAdmin, async (req, res) => {
+  res.json(await db.categories.findManyWithInactive());
 });
 
 apiRouter.post('/admin/categories', requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
@@ -947,8 +947,8 @@ apiRouter.post('/admin/orders/:id/review-bank-proof', requireAdmin, async (req: 
 });
 
 // Admin Delivery Areas
-apiRouter.get('/admin/delivery-areas', requireAdmin, (req, res) => {
-  res.json(db.deliveryAreas.findManyWithInactive());
+apiRouter.get('/admin/delivery-areas', requireAdmin, async (req, res) => {
+  res.json(await db.deliveryAreas.findManyWithInactive());
 });
 
 apiRouter.post('/admin/delivery-areas', requireAdmin, async (req: Request, res: Response) => {

@@ -187,7 +187,7 @@ export default function ProductDetailModal({
               <div className="space-y-2">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block">Available Options:</span>
                 <div className="flex flex-wrap gap-1.5">
-                  {product.variants.map((v) => (
+                  {(Array.isArray(product.variants) ? product.variants : []).map((v) => (
                     <button
                       key={v.name}
                       onClick={() => setSelectedVariant(v.name)}
@@ -249,7 +249,7 @@ export default function ProductDetailModal({
               <p className="text-[10px] text-gray-400 italic">No reviews yet. Be the first to review!</p>
             ) : (
               <div className="space-y-2.5 max-h-32 overflow-y-auto pr-1">
-                {reviews.map((rev) => (
+                {(Array.isArray(reviews) ? reviews : []).map((rev) => (
                   <div key={rev.id} className="bg-gray-50 p-2 rounded-xl text-[10px] space-y-1">
                     <div className="flex justify-between font-bold text-gray-800">
                       <span>{rev.userName}</span>

@@ -248,7 +248,7 @@ export default function AdminPanel({
     setProdFeatured(p.featured);
     setProdActive(p.active);
     setProdImgUrl(p.images[0] || '');
-    setProdVariantsInput(p.variants?.map(v => v.name).join(', ') || '');
+    setProdVariantsInput((Array.isArray(p.variants) ? p.variants : []).map(v => v.name).join(', ') || '');
     setProductFormOpen(true);
   };
 
@@ -559,8 +559,8 @@ export default function AdminPanel({
                 <div className="bg-white rounded-2xl border border-gray-200 p-5 shadow-sm space-y-4">
                   <h3 className="text-xs font-black uppercase tracking-wider text-gray-400">Daily Sales Trend (Last 7 Days)</h3>
                   <div className="h-44 w-full flex items-end gap-1.5 pt-4 border-b border-gray-200">
-                    {stats.salesTrend.map(day => {
-                      const maxVal = Math.max(...stats.salesTrend.map(d => d.amount)) || 1;
+                    {(Array.isArray(stats?.salesTrend) ? stats.salesTrend : []).map(day => {
+                      const maxVal = Math.max(...(Array.isArray(stats?.salesTrend) ? stats.salesTrend : []).map(d => d.amount)) || 1;
                       const heightPct = (day.amount / maxVal) * 80; // Scale to max 80%
                       return (
                         <div key={day.date} className="flex-1 flex flex-col items-center gap-2 group relative">
@@ -584,10 +584,10 @@ export default function AdminPanel({
                 <div className="bg-white rounded-2xl border border-gray-200 p-5 shadow-sm space-y-4">
                   <h3 className="text-xs font-black uppercase tracking-wider text-gray-400">Best Sellers List (By Revenue)</h3>
                   <div className="divide-y divide-gray-100">
-                    {stats.topProducts.length === 0 ? (
+                    {(Array.isArray(stats?.topProducts) ? stats.topProducts : []).length === 0 ? (
                       <p className="text-xs text-gray-400 italic py-4">No completed order sales recorded yet.</p>
                     ) : (
-                      stats.topProducts.map((p, idx) => (
+                      (Array.isArray(stats?.topProducts) ? stats.topProducts : []).map((p, idx) => (
                         <div key={p.name} className="flex justify-between items-center py-2.5">
                           <div className="flex items-center gap-2.5">
                             <span className="text-xs font-black text-gray-400 w-5">#{idx + 1}</span>
@@ -622,12 +622,12 @@ export default function AdminPanel({
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100 font-medium">
-                      {products.filter(p => p.active && p.stockQuantity <= p.minStockAlert).length === 0 ? (
+                      {(Array.isArray(products) ? products : []).filter(p => p.active && p.stockQuantity <= p.minStockAlert).length === 0 ? (
                         <tr>
                           <td colSpan={5} className="p-4 text-center text-gray-400 italic">All items are sufficiently stocked! Excellent.</td>
                         </tr>
                       ) : (
-                        products.filter(p => p.active && p.stockQuantity <= p.minStockAlert).map(p => (
+                        (Array.isArray(products) ? products : []).filter(p => p.active && p.stockQuantity <= p.minStockAlert).map(p => (
                           <tr key={p.id} className="text-rose-950 bg-rose-50/10">
                             <td className="p-3 font-mono font-bold">{p.sku}</td>
                             <td className="p-3 font-bold">{p.name}</td>
@@ -712,7 +712,7 @@ export default function AdminPanel({
                             className="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none bg-white focus:border-emerald-500"
                           >
                             <option value="">-- Choose Category --</option>
-                            {allCategories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                            {(Array.isArray(allCategories) ? allCategories : []).map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                           </select>
                         </div>
                         <div>
@@ -723,7 +723,7 @@ export default function AdminPanel({
                             className="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none bg-white focus:border-emerald-500"
                           >
                             <option value="">-- Choose Brand --</option>
-                            {brands.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
+                            {(Array.isArray(brands) ? brands : []).map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
                           </select>
                         </div>
                         <div>
@@ -904,10 +904,10 @@ export default function AdminPanel({
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100 font-medium">
-                      {products
+                      {(Array.isArray(products) ? products : [])
                         .filter(p => p.name.toLowerCase().includes(searchQuery.toLowerCase()) || p.sku.toLowerCase().includes(searchQuery.toLowerCase()))
                         .map(p => {
-                          const catName = categories.find(c => c.id === p.categoryId)?.name || 'General';
+                          const catName = (categories || []).find(c => c.id === p.categoryId)?.name || 'General';
                           return (
                             <tr key={p.id} className="hover:bg-gray-50">
                               <td className="p-3 flex items-center gap-3">
@@ -1026,7 +1026,7 @@ export default function AdminPanel({
                 )}
 
                 <div className="divide-y divide-gray-100">
-                  {allCategories.map(c => (
+                  {(Array.isArray(allCategories) ? allCategories : []).map(c => (
                     <div key={c.id} className="flex items-center justify-between py-2 text-xs">
                       <div className="flex items-center gap-2.5">
                         <img src={c.image} alt="" className="w-8 h-8 rounded object-cover" referrerPolicy="no-referrer" />
@@ -1054,7 +1054,7 @@ export default function AdminPanel({
                   </h3>
                 </div>
                 <div className="grid grid-cols-2 gap-2 text-xs font-bold">
-                  {brands.map(b => (
+                  {(Array.isArray(brands) ? brands : []).map(b => (
                     <div key={b.id} className="bg-gray-50 border border-gray-150 rounded-xl p-3 flex justify-between items-center">
                       <span>{b.name}</span>
                       <span className="text-[9px] text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded uppercase tracking-wider">Matched</span>
@@ -1088,7 +1088,7 @@ export default function AdminPanel({
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100 font-medium">
-                      {orders.length === 0 ? (
+                      {(!Array.isArray(orders) || orders.length === 0) ? (
                         <tr>
                           <td colSpan={7} className="p-6 text-center text-gray-400 italic">No checkout orders registered inside system database yet.</td>
                         </tr>
@@ -1225,7 +1225,7 @@ export default function AdminPanel({
                       <div>
                         <p className="text-[10px] uppercase font-bold text-gray-400 mb-2">Purchased Items Details</p>
                         <div className="divide-y divide-gray-100 border border-gray-150 rounded-xl px-3 bg-white">
-                          {selectedOrder.items?.map((it: any) => (
+                          {(Array.isArray(selectedOrder?.items) ? selectedOrder.items : []).map((it: any) => (
                             <div key={it.id} className="flex justify-between py-2 text-[11px]">
                               <div>
                                 <span className="font-bold text-gray-800">{it.productName}</span>
@@ -1386,7 +1386,7 @@ export default function AdminPanel({
               )}
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {areas.map(a => (
+                {(Array.isArray(areas) ? areas : []).map(a => (
                   <div key={a.id} className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm flex flex-col justify-between space-y-3">
                     <div>
                       <span className="text-[9px] bg-slate-100 text-slate-800 font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider">{a.city}</span>
@@ -1413,7 +1413,7 @@ export default function AdminPanel({
               <div className="bg-white rounded-2xl border border-gray-200 p-5 shadow-sm space-y-4">
                 <h3 className="text-xs font-black uppercase tracking-wider text-gray-400">Security & admin Activity log</h3>
                 <div className="space-y-3 max-h-[500px] overflow-y-auto pr-1">
-                  {auditLogs.map(l => (
+                  {(Array.isArray(auditLogs) ? auditLogs : []).map(l => (
                     <div key={l.id} className="bg-gray-50 border border-gray-150 rounded-xl p-3 text-[10px] space-y-1">
                       <div className="flex justify-between font-bold text-gray-800">
                         <span>{l.action}</span>
@@ -1433,9 +1433,9 @@ export default function AdminPanel({
               <div className="bg-white rounded-2xl border border-gray-200 p-5 shadow-sm space-y-4 self-start">
                 <h3 className="text-xs font-black uppercase tracking-wider text-gray-400">Stationery Stock Movement History</h3>
                 <div className="space-y-2 max-h-[500px] overflow-y-auto pr-1">
-                  {movements.map(m => {
+                  {(Array.isArray(movements) ? movements : []).map(m => {
                     const isIncrease = m.quantity > 0;
-                    const p = products.find(prod => prod.id === m.productId);
+                    const p = (Array.isArray(products) ? products : []).find(prod => prod.id === m.productId);
                     return (
                       <div key={m.id} className="flex justify-between items-center p-2.5 bg-gray-50 rounded-xl border border-gray-150 text-[10px]">
                         <div>
