@@ -346,7 +346,7 @@ export default function App() {
 
             {/* Quick Categories list with SVG visuals on top */}
             <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3 pt-2" id="quick-categories">
-              {categories.map((cat) => (
+              {(categories || []).map((cat) => (
                 <div 
                   key={cat.id}
                   onClick={() => setActiveCategory(cat.id)}
@@ -444,7 +444,7 @@ export default function App() {
                       />
                       <span>All Brands</span>
                     </label>
-                    {brands.map(brand => (
+                    {(brands || []).map(brand => (
                       <label key={brand.id} className="flex items-center gap-2 py-1 cursor-pointer hover:bg-gray-50 rounded px-1 text-gray-700">
                         <input 
                           type="radio" 

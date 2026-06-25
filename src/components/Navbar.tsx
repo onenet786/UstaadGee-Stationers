@@ -244,7 +244,7 @@ export default function Navbar({
           >
             All Products
           </button>
-          {categories.map((cat) => (
+          {(categories || []).map((cat) => (
             <button
               key={cat.id}
               onClick={() => onSelectCategory(cat.id)}
@@ -316,7 +316,7 @@ export default function Navbar({
                 >
                   All Stationery Items
                 </button>
-                {categories.map((cat) => (
+                {(categories || []).map((cat) => (
                   <button
                     key={cat.id}
                     onClick={() => { onSelectCategory(cat.id); setMobileMenuOpen(false); }}
