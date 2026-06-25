@@ -208,8 +208,19 @@ export async function initializeDb() {
   if (users.length === 0) {
     await query(`
       INSERT INTO users (id, email, name, password, role, phone) VALUES
-        ('u-admin','admin@ustaadgee.com','Ustaad Admin','$2b$10$VyeWGcQ37FWhakTmULOgTu4UkiGZ9RkSeaZLEks5.Brqrg.c/htdS','admin','+923334488205'),
+        ('u-admin','admin@ustaadgee.com','Ustaad Admin','$2b$10$xgqNscLUqYFNhRhA.hEMF.bMrgn32YZ1/L8k53wqz2nD.0KUwtIzm','admin','+923334488205'),
         ('u-cust','customer@test.com','Ahmed Khan','$2b$10$E8QavPQS//6xXOOEzipKN.FGvhFrKqn7uHJt0qq4jN7A1tqRx1IWq','customer','+923001234567')
+    `);
+  } else {
+    // Automatically correct wrong admin hash if the database was already created with it
+    await query(`
+      UPDATE users 
+      SET password = '$2b$10$xgqNscLUqYFNhRhA.hEMF.bMrgn32YZ1/L8k53wqz2nD.0KUwtIzm' 
+      WHERE email = 'admin@ustaadgee.com' 
+        AND password IN (
+          '$2b$10$VyeWGcQ37FWhakTmULOgTu4UkiGZ9RkSeaZLEks5.Brqrg.c/htdS',
+          '$2b$10$73mHhcHCGpnsphlI6Q29N.BQAqA8H5YTBPVtXNeFBVJQW7pmvFrIC'
+        )
     `);
   }
   const catCount = await query<any>('SELECT COUNT(*) FROM categories');
