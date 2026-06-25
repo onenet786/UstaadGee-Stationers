@@ -37,7 +37,7 @@ const requireAdmin = async (req: AuthenticatedRequest, res: Response, next: any)
 
 apiRouter.get('/health', async (req: Request, res: Response) => {
   try {
-    await db.query('SELECT 1');
+    await db.users.findMany();
     res.json({ db: 'connected' });
   } catch (err) {
     console.error('Health check DB error:', err);
