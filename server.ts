@@ -1,6 +1,11 @@
 import express from 'express';
 import path from 'path';
+import dotenv from 'dotenv';
 import { createServer as createViteServer } from 'vite';
+
+// Load environment variables from .env file immediately
+dotenv.config();
+
 import { initializeDb } from './server/db.ts';
 import { apiRouter } from './server/routes.ts';
 
