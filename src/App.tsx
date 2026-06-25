@@ -199,8 +199,8 @@ export default function App() {
       });
 
       const data = await res.json();
-      if (res.ok && data.success) {
-        localStorage.setItem('ustaad_token', `Bearer ${data.user.id}`);
+      if (res.ok && data.token) {
+        localStorage.setItem('ustaad_token', data.token);
         setCurrentUser(data.user);
         setAuthSuccess('Authentication successful! Closing modal...');
         setTimeout(() => {
