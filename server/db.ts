@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import {
   User, Category, Brand, Product, Order, OrderItem, PaymentLog, Coupon, Banner,
   DeliveryArea, ContactMessage, WishlistItem, Review, ShopSettings, AuditLog,
-  InventoryMovement
+  InventoryMovement, DashboardStats
 } from '../src/types.ts';
 
 dotenv.config();
@@ -663,12 +663,80 @@ export const db = {
   },
   // REPORTS -----------------------------------------------------------
   reports: {
-    getDashboardStats: async () => {
-      const totalProducts = (await query<any>('SELECT COUNT(*) FROM products'))[0].count;
-      const totalOrders = (await query<any>('SELECT COUNT(*) FROM orders'))[0].count;
-      const totalRevenue = (await query<any>('SELECT COALESCE(SUM(total_amount),0) AS sum FROM orders'))[0].sum;
-      const lowStock = (await query<any>('SELECT COUNT(*) FROM products WHERE stock_quantity <= min_stock_alert'))[0].count;
-      return { totalProducts: Number(totalProducts), totalOrders: Number(totalOrders), totalRevenue: Number(totalRevenue), lowStock: Number(lowStock) };
+    getDashboardStats: async (): Promise<DashboardStats> => {
+      const today = await query<any>(`
+        SELECT COALESCE(SUM(total_amount), 0) AS sales, COUNT(*) AS orders 
+        FROM orders 
+        WHERE created_at >= CURRENT_DATE AND status != 'cancelled'
+      `);
+      const month = await query<any>(`
+        SELECT COALESCE(SUM(total_amount), 0) AS sales, COUNT(*) AS orders 
+        FROM orders 
+        WHERE created_at >= date_trunc('month', CURRENT_DATE) AND status != 'cancelled'
+      `);
+      const lowStock = await query<any>(`
+        SELECT COUNT(*) AS count 
+        FROM products 
+        WHERE stock_quantity <= min_stock_alert AND active = true
+      `);
+      const pendingPay = await query<any>(`
+        SELECT COUNT(*) AS count 
+        FROM orders 
+        WHERE payment_status = 'pending' AND status != 'cancelled'
+      `);
+      const paymentMethods = await query<any>(`
+        SELECT payment_method AS method, COALESCE(SUM(total_amount), 0) AS total 
+        FROM orders 
+        WHERE status != 'cancelled' 
+        GROUP BY payment_method
+      `);
+      const trend = await query<any>(`
+        SELECT 
+          to_char(d, 'YYYY-MM-DD') AS date,
+          COALESCE(SUM(o.total_amount), 0)::numeric AS amount,
+          COUNT(o.id)::integer AS count
+        FROM generate_series(CURRENT_DATE - INTERVAL '6 days', CURRENT_DATE, '1 day') d
+        LEFT JOIN orders o ON date_trunc('day', o.created_at) = d AND o.status != 'cancelled'
+        GROUP BY d
+        ORDER BY d
+      `);
+      const topProds = await query<any>(`
+        SELECT 
+          p.name, 
+          SUM(oi.quantity)::integer AS quantity, 
+          SUM(oi.quantity * oi.price)::numeric AS revenue
+        FROM order_items oi
+        JOIN products p ON oi.product_id = p.id
+        JOIN orders o ON oi.order_id = o.id
+        WHERE o.status != 'cancelled'
+        GROUP BY p.id, p.name
+        ORDER BY revenue DESC
+        LIMIT 5
+      `);
+      const catSales = await query<any>(`
+        SELECT 
+          c.name, 
+          SUM(oi.quantity * oi.price)::numeric AS value
+        FROM order_items oi
+        JOIN products p ON oi.product_id = p.id
+        JOIN categories c ON p.category_id = c.id
+        JOIN orders o ON oi.order_id = o.id
+        WHERE o.status != 'cancelled'
+        GROUP BY c.id, c.name
+      `);
+
+      return {
+        todaySales: Number(today[0]?.sales || 0),
+        todayOrders: Number(today[0]?.orders || 0),
+        monthlySales: Number(month[0]?.sales || 0),
+        monthlyOrders: Number(month[0]?.orders || 0),
+        lowStockCount: Number(lowStock[0]?.count || 0),
+        pendingPaymentsCount: Number(pendingPay[0]?.count || 0),
+        revenueByPaymentMethod: paymentMethods.map((pm: any) => ({ method: pm.method, total: Number(pm.total) })),
+        salesTrend: trend.map((t: any) => ({ date: t.date, amount: Number(t.amount), count: Number(t.count) })),
+        topProducts: topProds.map((tp: any) => ({ name: tp.name, quantity: Number(tp.quantity), revenue: Number(tp.revenue) })),
+        categorySales: catSales.map((cs: any) => ({ name: cs.name, value: Number(cs.value) }))
+      };
     }
   }
 };
