@@ -274,6 +274,46 @@ export async function initializeDb() {
       await query('INSERT INTO delivery_areas (id, city, area_name, charges, est_days, active) VALUES ($1,$2,$3,$4,$5,$6)', [d.id, d.city, d.areaName, d.charges, d.estDays, d.active]);
     }
   }
+
+  const bannersCount = await query<any>('SELECT COUNT(*) FROM banners');
+  if (Number(bannersCount[0].count) === 0) {
+    const INITIAL_BANNERS = [
+      {
+        id: 'bn-1',
+        title: 'Back To School Sale!',
+        subtitle: 'Get flat 15% discount on all school stationery kits.',
+        link: '/category/school-stationery',
+        image: 'https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?w=1600&auto=format&fit=crop&q=80',
+        position: '1',
+        active: true
+      },
+      {
+        id: 'bn-2',
+        title: 'Premium Office Core',
+        subtitle: 'Equip your workspace with imported papers, luxury pens, and desktop organizers.',
+        link: '/category/office-stationery',
+        image: 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=1600&auto=format&fit=crop&q=80',
+        position: '2',
+        active: true
+      },
+      {
+        id: 'bn-3',
+        title: 'Artistic Masterpieces',
+        subtitle: 'Professional canvas sets, oil paints, and watercolor sketchpads.',
+        link: '/category/art-supplies',
+        image: 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=1600&auto=format&fit=crop&q=80',
+        position: '3',
+        active: true
+      }
+    ];
+    for (const b of INITIAL_BANNERS) {
+      await query(
+        'INSERT INTO banners (id, title, subtitle, link, image, position, active) VALUES ($1,$2,$3,$4,$5,$6,$7)',
+        [b.id, b.title, b.subtitle, b.link, b.image, b.position, b.active]
+      );
+    }
+  }
+
   const settingsCount = await query<any>('SELECT COUNT(*) FROM settings');
   if (Number(settingsCount[0].count) === 0) {
     const INITIAL_SETTINGS: ShopSettings = {
