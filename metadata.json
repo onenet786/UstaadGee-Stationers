@@ -1,0 +1,6 @@
+{
+  "name": "UstaadGee Stationers",
+  "description": "A comprehensive full-stack e-commerce application for UstaadGee Stationers, a premium stationery shop in Pakistan, featuring an interactive storefront, secure payments (Easypaisa, JazzCash, bank, COD), and a robust admin dashboard with inventory and sales reports.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
