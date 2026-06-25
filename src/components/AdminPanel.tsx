@@ -671,223 +671,6 @@ export default function AdminPanel({
                 </button>
               </div>
 
-              {/* Create/Edit Form Modal Overlay */}
-              {productFormOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-                  <div className="bg-white rounded-3xl p-6 shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto space-y-4 animate-fadeIn">
-                    <div className="flex justify-between items-center border-b border-gray-150 pb-2">
-                      <h3 className="font-black text-gray-900 text-base">
-                        {editingProductId ? '✏️ Modify Stationery Record' : '📦 Create Stationery Record'}
-                      </h3>
-                      <button 
-                        onClick={() => setProductFormOpen(false)}
-                        className="p-1 hover:bg-gray-100 rounded-full"
-                      >
-                        <X className="w-5 h-5 text-gray-400" />
-                      </button>
-                    </div>
-
-                    <form onSubmit={handleProductSubmit} className="space-y-4 text-xs font-semibold">
-                      <div className="grid grid-cols-2 gap-3">
-                        <div className="col-span-2">
-                          <label className="block text-[11px] text-gray-400 mb-1 uppercase font-bold">Product Title *</label>
-                          <input 
-                            type="text" 
-                            required
-                            placeholder="e.g. Dollar Fountain Pen SP-10 (Blue)"
-                            value={prodName}
-                            onChange={(e) => setProdName(e.target.value)}
-                            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none focus:border-emerald-500"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-3 gap-3">
-                        <div>
-                          <label className="block text-[11px] text-gray-400 mb-1 uppercase font-bold">Category Assignment *</label>
-                          <select 
-                            required
-                            value={prodCatId}
-                            onChange={(e) => setProdCatId(e.target.value)}
-                            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none bg-white focus:border-emerald-500"
-                          >
-                            <option value="">-- Choose Category --</option>
-                            {(Array.isArray(allCategories) ? allCategories : []).map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                          </select>
-                        </div>
-                        <div>
-                          <label className="block text-[11px] text-gray-400 mb-1 uppercase font-bold">Brand Assignment</label>
-                          <select 
-                            value={prodBrandId}
-                            onChange={(e) => setProdBrandId(e.target.value)}
-                            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none bg-white focus:border-emerald-500"
-                          >
-                            <option value="">-- Choose Brand --</option>
-                            {(Array.isArray(brands) ? brands : []).map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
-                          </select>
-                        </div>
-                        <div>
-                          <label className="block text-[11px] text-gray-400 mb-1 uppercase font-bold">Barcode (EAN-13)</label>
-                          <input 
-                            type="text" 
-                            placeholder="e.g. 8964000110..."
-                            value={prodBarcode}
-                            onChange={(e) => setProdBarcode(e.target.value)}
-                            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none focus:border-emerald-500 font-mono"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-4 gap-3">
-                        <div>
-                          <label className="block text-[11px] text-gray-400 mb-1 uppercase font-bold">Cost Price *</label>
-                          <input 
-                            type="number" 
-                            required
-                            placeholder="Cost"
-                            value={prodCostPrice}
-                            onChange={(e) => setProdCostPrice(Number(e.target.value))}
-                            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none focus:border-emerald-500"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-[11px] text-gray-400 mb-1 uppercase font-bold">Sale Price *</label>
-                          <input 
-                            type="number" 
-                            required
-                            placeholder="Retail"
-                            value={prodSalePrice}
-                            onChange={(e) => setProdSalePrice(Number(e.target.value))}
-                            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none focus:border-emerald-500"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-[11px] text-gray-400 mb-1 uppercase font-bold">Promo/Discount Price</label>
-                          <input 
-                            type="number" 
-                            placeholder="Active promo"
-                            value={prodDiscPrice}
-                            onChange={(e) => setProdDiscPrice(e.target.value)}
-                            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none focus:border-emerald-500"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-[11px] text-gray-400 mb-1 uppercase font-bold">Stock unit type</label>
-                          <select 
-                            value={prodUnit}
-                            onChange={(e) => setProdUnit(e.target.value as any)}
-                            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none bg-white focus:border-emerald-500 capitalize"
-                          >
-                            <option value="piece">piece</option>
-                            <option value="box">box</option>
-                            <option value="dozen">dozen</option>
-                            <option value="packet">packet</option>
-                            <option value="ream">ream</option>
-                          </select>
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-3">
-                        <div>
-                          <label className="block text-[11px] text-gray-400 mb-1 uppercase font-bold">Opening Stock Qty *</label>
-                          <input 
-                            type="number" 
-                            required
-                            placeholder="Qty on hand"
-                            value={prodStock}
-                            onChange={(e) => setProdStock(Number(e.target.value))}
-                            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none focus:border-emerald-500"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-[11px] text-gray-400 mb-1 uppercase font-bold">Min Stock Alert trigger *</label>
-                          <input 
-                            type="number" 
-                            required
-                            placeholder="Defalut: 5"
-                            value={prodMinStock}
-                            onChange={(e) => setProdMinStock(Number(e.target.value))}
-                            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none focus:border-emerald-500"
-                          />
-                        </div>
-                      </div>
-
-                      <div>
-                        <label className="block text-[11px] text-gray-400 mb-1 uppercase font-bold">Variants List (Comma-separated name)</label>
-                        <input 
-                          type="text" 
-                          placeholder="e.g. Blue, Black, Red (We will distribute stock equally)"
-                          value={prodVariantsInput}
-                          onChange={(e) => setProdVariantsInput(e.target.value)}
-                          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none focus:border-emerald-500"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-[11px] text-gray-400 mb-1 uppercase font-bold">Image URL</label>
-                        <input 
-                          type="url" 
-                          placeholder="e.g. https://images.unsplash.com/... (Leaves empty for default placeholders)"
-                          value={prodImgUrl}
-                          onChange={(e) => setProdImgUrl(e.target.value)}
-                          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none focus:border-emerald-500 font-mono"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-[11px] text-gray-400 mb-1 uppercase font-bold">Product Description</label>
-                        <textarea 
-                          rows={3}
-                          placeholder="Provide deep specifications (writing fluid quality, binding offset weight, etc.)"
-                          value={prodDesc}
-                          onChange={(e) => setProdDesc(e.target.value)}
-                          className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-xs outline-none focus:border-emerald-500"
-                        />
-                      </div>
-
-                      <div className="flex gap-6 pt-2">
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input 
-                            type="checkbox" 
-                            checked={prodFeatured}
-                            onChange={(e) => setProdFeatured(e.target.checked)}
-                            className="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
-                          />
-                          <span className="text-xs text-gray-700">★ Display as Featured Item on Home Page</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input 
-                            type="checkbox" 
-                            checked={prodActive}
-                            onChange={(e) => setProdActive(e.target.checked)}
-                            className="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
-                          />
-                          <span className="text-xs text-gray-700">✓ Active storefront listing (Available to buy)</span>
-                        </label>
-                      </div>
-
-                      <div className="pt-4 border-t border-gray-150 flex justify-end gap-2">
-                        <button 
-                          type="button" 
-                          onClick={() => setProductFormOpen(false)}
-                          className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg"
-                        >
-                          Cancel
-                        </button>
-                        <button 
-                          type="submit" 
-                          disabled={actionLoading}
-                          className="px-5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg flex items-center gap-1"
-                        >
-                          {actionLoading && <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />}
-                          <span>Save Stationery Record</span>
-                        </button>
-                      </div>
-                    </form>
-                  </div>
-                </div>
-              )}
-
               {/* Table List of Products */}
               <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
                 <div className="overflow-x-auto">
@@ -1147,170 +930,7 @@ export default function AdminPanel({
                 </div>
               </div>
 
-              {/* Inspect Details Overlay Modal */}
-              {selectedOrder && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-                  <div className="bg-white rounded-3xl p-6 shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto space-y-4 animate-fadeIn">
-                    <div className="flex justify-between items-center border-b border-gray-150 pb-2">
-                      <div>
-                        <h4 className="text-xs uppercase font-bold text-gray-400">Order Fulfilment Ticket</h4>
-                        <h3 className="font-black text-gray-900 text-base">{selectedOrder.orderNumber}</h3>
-                      </div>
-                      <button 
-                        onClick={() => setSelectedOrder(null)}
-                        className="p-1 hover:bg-gray-100 rounded-full"
-                      >
-                        <X className="w-5 h-5 text-gray-400" />
-                      </button>
-                    </div>
 
-                    {/* Order Details Body */}
-                    <div className="text-xs space-y-4 font-medium">
-                      
-                      {/* Customer info & Delivery Address details */}
-                      <div className="grid grid-cols-2 gap-4 bg-gray-50 rounded-xl p-3.5 border border-gray-150">
-                        <div>
-                          <p className="text-[10px] uppercase font-bold text-gray-400 mb-1">Customer Information</p>
-                          <p className="font-bold text-gray-800">{selectedOrder.customerName}</p>
-                          <p className="text-gray-500">{selectedOrder.customerPhone}</p>
-                          <p className="text-gray-400">{selectedOrder.customerEmail}</p>
-                        </div>
-                        <div>
-                          <p className="text-[10px] uppercase font-bold text-gray-400 mb-1">Shipping Destination</p>
-                          <p className="text-gray-700 leading-normal">{selectedOrder.shippingAddress}</p>
-                          <p className="font-bold text-emerald-800">{selectedOrder.shippingArea}, {selectedOrder.shippingCity}</p>
-                          <span className="text-[9px] text-gray-400">Est days: {selectedOrder.estimatedDeliveryTime}</span>
-                        </div>
-                      </div>
-
-                      {/* Manual payment proof verification */}
-                      {selectedOrder.paymentProofUrl && (
-                        <div className="bg-indigo-50 border border-indigo-150 rounded-xl p-4 space-y-3">
-                          <div className="flex items-center justify-between">
-                            <span className="text-[10px] uppercase font-bold text-indigo-800">Meezan Bank Screenshot Receipt Attached:</span>
-                            <a 
-                              href={selectedOrder.paymentProofUrl} 
-                              target="_blank" 
-                              rel="noreferrer"
-                              className="text-indigo-600 hover:underline font-bold flex items-center gap-0.5 text-[10px]"
-                            >
-                              <span>View Slip full screen</span>
-                              <ExternalLink className="w-3 h-3" />
-                            </a>
-                          </div>
-                          
-                          <div className="border border-indigo-200 rounded-lg overflow-hidden max-h-48 bg-white flex justify-center">
-                            <img src={selectedOrder.paymentProofUrl} alt="Bank Proof" className="object-contain max-h-48" />
-                          </div>
-
-                          <div className="flex justify-end gap-2">
-                            <button
-                              onClick={() => handleReviewBankProof(selectedOrder.id, false)}
-                              className="bg-red-50 hover:bg-red-100 text-red-600 font-bold px-3 py-1.5 rounded-lg text-[10px] transition"
-                            >
-                              ✗ Reject Slip
-                            </button>
-                            <button
-                              onClick={() => handleReviewBankProof(selectedOrder.id, true)}
-                              className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-1.5 rounded-lg text-[10px] transition flex items-center gap-1"
-                            >
-                              <Check className="w-3.5 h-3.5" />
-                              <span>Approve & Confirmed Payment</span>
-                            </button>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Items list */}
-                      <div>
-                        <p className="text-[10px] uppercase font-bold text-gray-400 mb-2">Purchased Items Details</p>
-                        <div className="divide-y divide-gray-100 border border-gray-150 rounded-xl px-3 bg-white">
-                          {(Array.isArray(selectedOrder?.items) ? selectedOrder.items : []).map((it: any) => (
-                            <div key={it.id} className="flex justify-between py-2 text-[11px]">
-                              <div>
-                                <span className="font-bold text-gray-800">{it.productName}</span>
-                                {it.variantName && <span className="text-[9px] bg-emerald-50 text-emerald-800 px-1.5 py-0.2 rounded font-bold ml-1.5">{it.variantName}</span>}
-                              </div>
-                              <span className="font-mono text-gray-400">Rs. {it.price} x {it.quantity} = <b>Rs. {it.totalPrice}</b></span>
-                            </div>
-                          ))}
-                        </div>
-                        <div className="text-right pt-2 font-black text-gray-900">
-                          Total Amount Paid/Payable: <span className="text-sm">Rs. {selectedOrder.totalAmount} PKR</span>
-                        </div>
-                      </div>
-
-                      {/* Order status actions */}
-                      <div className="pt-4 border-t border-gray-150 space-y-2">
-                        <p className="text-[10px] uppercase font-bold text-gray-400">Modify Order Processing Workflow</p>
-                        
-                        <div className="flex flex-wrap gap-1.5">
-                          {/* Confirm */}
-                          {selectedOrder.status === 'pending' && (
-                            <button
-                              onClick={() => handleUpdateOrderStatus(selectedOrder.id, 'confirmed', selectedOrder.paymentStatus, 'Order confirmed by staff')}
-                              className="bg-blue-600 text-white hover:bg-blue-700 px-3 py-1.5 rounded-lg text-[10px] font-bold"
-                            >
-                              ✓ Confirm Order (Deducts stock automatically)
-                            </button>
-                          )}
-                          
-                          {/* Processing */}
-                          {selectedOrder.status === 'confirmed' && (
-                            <button
-                              onClick={() => handleUpdateOrderStatus(selectedOrder.id, 'processing', selectedOrder.paymentStatus, 'Under printing/photocopy/assembly')}
-                              className="bg-indigo-600 text-white hover:bg-indigo-700 px-3 py-1.5 rounded-lg text-[10px] font-bold"
-                            >
-                              ⚡ Start Processing
-                            </button>
-                          )}
-
-                          {/* Packed */}
-                          {selectedOrder.status === 'processing' && (
-                            <button
-                              onClick={() => handleUpdateOrderStatus(selectedOrder.id, 'packed', selectedOrder.paymentStatus, 'Items securely packed')}
-                              className="bg-purple-600 text-white hover:bg-purple-700 px-3 py-1.5 rounded-lg text-[10px] font-bold"
-                            >
-                              📦 Mark as Packed
-                            </button>
-                          )}
-
-                          {/* Out for delivery */}
-                          {selectedOrder.status === 'packed' && (
-                            <button
-                              onClick={() => handleUpdateOrderStatus(selectedOrder.id, 'out_for_delivery', selectedOrder.paymentStatus, 'Dispatched with courier')}
-                              className="bg-cyan-600 text-white hover:bg-cyan-700 px-3 py-1.5 rounded-lg text-[10px] font-bold"
-                            >
-                              🚚 Out For Delivery
-                            </button>
-                          )}
-
-                          {/* Delivered */}
-                          {selectedOrder.status === 'out_for_delivery' && (
-                            <button
-                              onClick={() => handleUpdateOrderStatus(selectedOrder.id, 'delivered', 'paid', 'Delivered & COD amount collected')}
-                              className="bg-emerald-600 text-white hover:bg-emerald-700 px-4 py-1.5 rounded-lg text-[10px] font-bold"
-                            >
-                              ✓ Mark as Delivered (COD paid)
-                            </button>
-                          )}
-
-                          {/* Cancel Order */}
-                          {selectedOrder.status !== 'delivered' && selectedOrder.status !== 'cancelled' && (
-                            <button
-                              onClick={() => handleUpdateOrderStatus(selectedOrder.id, 'cancelled', 'unpaid', 'Order cancelled')}
-                              className="bg-red-50 hover:bg-red-100 text-red-600 px-3 py-1.5 rounded-lg text-[10px] font-bold"
-                            >
-                              ✗ Cancel order & restore stocks
-                            </button>
-                          )}
-                        </div>
-                      </div>
-
-                    </div>
-                  </div>
-                </div>
-              )}
 
             </div>
           )}
@@ -1699,9 +1319,390 @@ export default function AdminPanel({
               </div>
             </form>
           )}
-
         </div>
       </main>
+
+      {/* Create/Edit Form Modal Overlay */}
+      {productFormOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+          <div className="bg-white rounded-3xl p-6 shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto space-y-4 animate-fadeIn">
+            <div className="flex justify-between items-center border-b border-gray-150 pb-2">
+              <h3 className="font-black text-gray-900 text-base">
+                {editingProductId ? '✏️ Modify Stationery Record' : '📦 Create Stationery Record'}
+              </h3>
+              <button 
+                onClick={() => setProductFormOpen(false)}
+                className="p-1 hover:bg-gray-100 rounded-full"
+              >
+                <X className="w-5 h-5 text-gray-400" />
+              </button>
+            </div>
+
+            <form onSubmit={handleProductSubmit} className="space-y-4 text-xs font-semibold">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="col-span-2">
+                  <label className="block text-[11px] text-gray-400 mb-1 uppercase font-bold">Product Title *</label>
+                  <input 
+                    type="text" 
+                    required
+                    placeholder="e.g. Dollar Fountain Pen SP-10 (Blue)"
+                    value={prodName}
+                    onChange={(e) => setProdName(e.target.value)}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none focus:border-emerald-500"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-[11px] text-gray-400 mb-1 uppercase font-bold">Category Assignment *</label>
+                  <select 
+                    required
+                    value={prodCatId}
+                    onChange={(e) => setProdCatId(e.target.value)}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none bg-white focus:border-emerald-500"
+                  >
+                    <option value="">-- Choose Category --</option>
+                    {(Array.isArray(allCategories) ? allCategories : []).map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-[11px] text-gray-400 mb-1 uppercase font-bold">Brand Assignment</label>
+                  <select 
+                    value={prodBrandId}
+                    onChange={(e) => setProdBrandId(e.target.value)}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none bg-white focus:border-emerald-500"
+                  >
+                    <option value="">-- Choose Brand --</option>
+                    {(Array.isArray(brands) ? brands : []).map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-[11px] text-gray-400 mb-1 uppercase font-bold">Barcode (EAN-13)</label>
+                  <input 
+                    type="text" 
+                    placeholder="e.g. 8964000110..."
+                    value={prodBarcode}
+                    onChange={(e) => setProdBarcode(e.target.value)}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none focus:border-emerald-500 font-mono"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-4 gap-3">
+                <div>
+                  <label className="block text-[11px] text-gray-400 mb-1 uppercase font-bold">Cost Price *</label>
+                  <input 
+                    type="number" 
+                    required
+                    placeholder="Cost"
+                    value={prodCostPrice}
+                    onChange={(e) => setProdCostPrice(Number(e.target.value))}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none focus:border-emerald-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] text-gray-400 mb-1 uppercase font-bold">Sale Price *</label>
+                  <input 
+                    type="number" 
+                    required
+                    placeholder="Retail"
+                    value={prodSalePrice}
+                    onChange={(e) => setProdSalePrice(Number(e.target.value))}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none focus:border-emerald-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] text-gray-400 mb-1 uppercase font-bold">Promo/Discount Price</label>
+                  <input 
+                    type="number" 
+                    placeholder="Active promo"
+                    value={prodDiscPrice}
+                    onChange={(e) => setProdDiscPrice(e.target.value)}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none focus:border-emerald-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] text-gray-400 mb-1 uppercase font-bold">Stock unit type</label>
+                  <select 
+                    value={prodUnit}
+                    onChange={(e) => setProdUnit(e.target.value as any)}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none bg-white focus:border-emerald-500 capitalize"
+                  >
+                    <option value="piece">piece</option>
+                    <option value="box">box</option>
+                    <option value="dozen">dozen</option>
+                    <option value="packet">packet</option>
+                    <option value="ream">ream</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[11px] text-gray-400 mb-1 uppercase font-bold">Opening Stock Qty *</label>
+                  <input 
+                    type="number" 
+                    required
+                    placeholder="Qty on hand"
+                    value={prodStock}
+                    onChange={(e) => setProdStock(Number(e.target.value))}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none focus:border-emerald-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] text-gray-400 mb-1 uppercase font-bold">Min Stock Alert trigger *</label>
+                  <input 
+                    type="number" 
+                    required
+                    placeholder="Defalut: 5"
+                    value={prodMinStock}
+                    onChange={(e) => setProdMinStock(Number(e.target.value))}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none focus:border-emerald-500"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[11px] text-gray-400 mb-1 uppercase font-bold">Variants List (Comma-separated name)</label>
+                <input 
+                  type="text" 
+                  placeholder="e.g. Blue, Black, Red (We will distribute stock equally)"
+                  value={prodVariantsInput}
+                  onChange={(e) => setProdVariantsInput(e.target.value)}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none focus:border-emerald-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] text-gray-400 mb-1 uppercase font-bold">Image URL</label>
+                <input 
+                  type="url" 
+                  placeholder="e.g. https://images.unsplash.com/... (Leaves empty for default placeholders)"
+                  value={prodImgUrl}
+                  onChange={(e) => setProdImgUrl(e.target.value)}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none focus:border-emerald-500 font-mono"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] text-gray-400 mb-1 uppercase font-bold">Product Description</label>
+                <textarea 
+                  rows={3}
+                  placeholder="Provide deep specifications (writing fluid quality, binding offset weight, etc.)"
+                  value={prodDesc}
+                  onChange={(e) => setProdDesc(e.target.value)}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-xs outline-none focus:border-emerald-500"
+                />
+              </div>
+
+              <div className="flex gap-6 pt-2">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input 
+                    type="checkbox" 
+                    checked={prodFeatured}
+                    onChange={(e) => setProdFeatured(e.target.checked)}
+                    className="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
+                  />
+                  <span className="text-xs text-gray-700">★ Display as Featured Item on Home Page</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input 
+                    type="checkbox" 
+                    checked={prodActive}
+                    onChange={(e) => setProdActive(e.target.checked)}
+                    className="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
+                  />
+                  <span className="text-xs text-gray-700">✓ Active storefront listing (Available to buy)</span>
+                </label>
+              </div>
+
+              <div className="pt-4 border-t border-gray-150 flex justify-end gap-2">
+                <button 
+                  type="button" 
+                  onClick={() => setProductFormOpen(false)}
+                  className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg"
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit" 
+                  disabled={actionLoading}
+                  className="px-5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg flex items-center gap-1"
+                >
+                  {actionLoading && <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />}
+                  <span>Save Stationery Record</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Inspect Details Overlay Modal */}
+      {selectedOrder && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+          <div className="bg-white rounded-3xl p-6 shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto space-y-4 animate-fadeIn">
+            <div className="flex justify-between items-center border-b border-gray-150 pb-2">
+              <div>
+                <h4 className="text-xs uppercase font-bold text-gray-400">Order Fulfilment Ticket</h4>
+                <h3 className="font-black text-gray-900 text-base">{selectedOrder.orderNumber}</h3>
+              </div>
+              <button 
+                onClick={() => setSelectedOrder(null)}
+                className="p-1 hover:bg-gray-100 rounded-full"
+              >
+                <X className="w-5 h-5 text-gray-400" />
+              </button>
+            </div>
+
+            {/* Order Details Body */}
+            <div className="text-xs space-y-4 font-medium">
+              
+              {/* Customer info & Delivery Address details */}
+              <div className="grid grid-cols-2 gap-4 bg-gray-50 rounded-xl p-3.5 border border-gray-150">
+                <div>
+                  <p className="text-[10px] uppercase font-bold text-gray-400 mb-1">Customer Information</p>
+                  <p className="font-bold text-gray-800">{selectedOrder.customerName}</p>
+                  <p className="text-gray-500">{selectedOrder.customerPhone}</p>
+                  <p className="text-gray-400">{selectedOrder.customerEmail}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] uppercase font-bold text-gray-400 mb-1">Shipping Destination</p>
+                  <p className="text-gray-700 leading-normal">{selectedOrder.shippingAddress}</p>
+                  <p className="font-bold text-emerald-800">{selectedOrder.shippingArea}, {selectedOrder.shippingCity}</p>
+                  <span className="text-[9px] text-gray-400">Est days: {selectedOrder.estimatedDeliveryTime}</span>
+                </div>
+              </div>
+
+              {/* Manual payment proof verification */}
+              {selectedOrder.paymentProofUrl && (
+                <div className="bg-indigo-50 border border-indigo-150 rounded-xl p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] uppercase font-bold text-indigo-800">Meezan Bank Screenshot Receipt Attached:</span>
+                    <a 
+                      href={selectedOrder.paymentProofUrl} 
+                      target="_blank" 
+                      rel="noreferrer"
+                      className="text-indigo-600 hover:underline font-bold flex items-center gap-0.5 text-[10px]"
+                    >
+                      <span>View Slip full screen</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                  </div>
+                  
+                  <div className="border border-indigo-200 rounded-lg overflow-hidden max-h-48 bg-white flex justify-center">
+                    <img src={selectedOrder.paymentProofUrl} alt="Bank Proof" className="object-contain max-h-48" />
+                  </div>
+
+                  <div className="flex justify-end gap-2">
+                    <button
+                      onClick={() => handleReviewBankProof(selectedOrder.id, false)}
+                      className="bg-red-50 hover:bg-red-100 text-red-600 font-bold px-3 py-1.5 rounded-lg text-[10px] transition"
+                    >
+                      ✗ Reject Slip
+                    </button>
+                    <button
+                      onClick={() => handleReviewBankProof(selectedOrder.id, true)}
+                      className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-1.5 rounded-lg text-[10px] transition flex items-center gap-1"
+                    >
+                      <Check className="w-3.5 h-3.5" />
+                      <span>Approve & Confirmed Payment</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Items list */}
+              <div>
+                <p className="text-[10px] uppercase font-bold text-gray-400 mb-2">Purchased Items Details</p>
+                <div className="divide-y divide-gray-100 border border-gray-150 rounded-xl px-3 bg-white">
+                  {(Array.isArray(selectedOrder?.items) ? selectedOrder.items : []).map((it: any) => (
+                    <div key={it.id} className="flex justify-between py-2 text-[11px]">
+                      <div>
+                        <span className="font-bold text-gray-800">{it.productName}</span>
+                        {it.variantName && <span className="text-[9px] bg-emerald-50 text-emerald-800 px-1.5 py-0.2 rounded font-bold ml-1.5">{it.variantName}</span>}
+                      </div>
+                      <span className="font-mono text-gray-400">Rs. {it.price} x {it.quantity} = <b>Rs. {it.totalPrice}</b></span>
+                    </div>
+                  ))}
+                </div>
+                <div className="text-right pt-2 font-black text-gray-900">
+                  Total Amount Paid/Payable: <span className="text-sm">Rs. {selectedOrder.totalAmount} PKR</span>
+                </div>
+              </div>
+
+              {/* Order status actions */}
+              <div className="pt-4 border-t border-gray-150 space-y-2">
+                <p className="text-[10px] uppercase font-bold text-gray-400">Modify Order Processing Workflow</p>
+                
+                <div className="flex flex-wrap gap-1.5">
+                  {/* Confirm */}
+                  {selectedOrder.status === 'pending' && (
+                    <button
+                      onClick={() => handleUpdateOrderStatus(selectedOrder.id, 'confirmed', selectedOrder.paymentStatus, 'Order confirmed by staff')}
+                      className="bg-blue-600 text-white hover:bg-blue-700 px-3 py-1.5 rounded-lg text-[10px] font-bold"
+                    >
+                      ✓ Confirm Order (Deducts stock automatically)
+                    </button>
+                  )}
+                  
+                  {/* Processing */}
+                  {selectedOrder.status === 'confirmed' && (
+                    <button
+                      onClick={() => handleUpdateOrderStatus(selectedOrder.id, 'processing', selectedOrder.paymentStatus, 'Under printing/photocopy/assembly')}
+                      className="bg-indigo-600 text-white hover:bg-indigo-700 px-3 py-1.5 rounded-lg text-[10px] font-bold"
+                    >
+                      ⚡ Start Processing
+                    </button>
+                  )}
+
+                  {/* Packed */}
+                  {selectedOrder.status === 'processing' && (
+                    <button
+                      onClick={() => handleUpdateOrderStatus(selectedOrder.id, 'packed', selectedOrder.paymentStatus, 'Items securely packed')}
+                      className="bg-purple-600 text-white hover:bg-purple-700 px-3 py-1.5 rounded-lg text-[10px] font-bold"
+                    >
+                      📦 Mark as Packed
+                    </button>
+                  )}
+
+                  {/* Out for delivery */}
+                  {selectedOrder.status === 'packed' && (
+                    <button
+                      onClick={() => handleUpdateOrderStatus(selectedOrder.id, 'out_for_delivery', selectedOrder.paymentStatus, 'Dispatched with courier')}
+                      className="bg-cyan-600 text-white hover:bg-cyan-700 px-3 py-1.5 rounded-lg text-[10px] font-bold"
+                    >
+                      🚚 Out For Delivery
+                    </button>
+                  )}
+
+                  {/* Delivered */}
+                  {selectedOrder.status === 'out_for_delivery' && (
+                    <button
+                      onClick={() => handleUpdateOrderStatus(selectedOrder.id, 'delivered', 'paid', 'Delivered & COD amount collected')}
+                      className="bg-emerald-600 text-white hover:bg-emerald-700 px-4 py-1.5 rounded-lg text-[10px] font-bold"
+                    >
+                      ✓ Mark as Delivered (COD paid)
+                    </button>
+                  )}
+
+                  {/* Cancel Order */}
+                  {selectedOrder.status !== 'delivered' && selectedOrder.status !== 'cancelled' && (
+                    <button
+                      onClick={() => handleUpdateOrderStatus(selectedOrder.id, 'cancelled', 'unpaid', 'Order cancelled')}
+                      className="bg-red-50 hover:bg-red-100 text-red-600 px-3 py-1.5 rounded-lg text-[10px] font-bold"
+                    >
+                      ✗ Cancel order & restore stocks
+                    </button>
+                  )}
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
