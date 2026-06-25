@@ -5,11 +5,13 @@ import { initializeDb } from './server/db.ts';
 import { apiRouter } from './server/routes.ts';
 
 async function startServer() {
+  // Ensure we run in production mode when NODE_ENV is not explicitly set
+  if (!process.env.NODE_ENV) process.env.NODE_ENV = 'production';
   // Ensure database folder and seed records are prepared first
   await initializeDb();
 
   const app = express();
-  const PORT = 3000;
+  const PORT = Number(process.env.PORT) || 3000;
 
   // Parse JSON and URL-encoded bodies for checkouts, contact, and upload screenshots
   app.use(express.json({ limit: '10mb' }));
@@ -56,9 +58,10 @@ async function startServer() {
   }
 
   app.listen(PORT, '0.0.0.0', () => {
+    const host = process.env.HOST || '0.0.0.0';
     console.log(`=======================================================`);
     console.log(` USTAADGEE STATIONERS BACKEND BOOTED SUCCESSFULLY!`);
-    console.log(` Running on: http://0.0.0.0:${PORT}`);
+    console.log(` Running on: http://${host}:${PORT}`);
     console.log(` Local Time: ${new Date().toLocaleString('en-US')}`);
     console.log(`=======================================================`);
   });

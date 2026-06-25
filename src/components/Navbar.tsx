@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { Search, ShoppingBag, Heart, User, LogOut, ShieldAlert, Sparkles, MessageCircle, Menu, X } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { Search, ShoppingBag, Heart, User, LogOut, ShieldAlert, Sparkles, MessageCircle, Menu, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useEffect } from 'react';
 import { Category } from '../types';
 
 interface NavbarProps {
@@ -31,8 +32,43 @@ export default function Navbar({
   onOpenTrack,
   onOpenContact
 }: NavbarProps) {
+  const [dbStatus, setDbStatus] = useState<'connected' | 'error' | 'loading'>('loading');
+
+  // Fetch DB health on mount and every 30 seconds
+  useEffect(() => {
+    const checkHealth = async () => {
+      try {
+        const res = await fetch('/api/health');
+        const data = await res.json();
+        if (res.ok && data.db === 'connected') {
+          setDbStatus('connected');
+        } else {
+          setDbStatus('error');
+        }
+      } catch (e) {
+        setDbStatus('error');
+      }
+    };
+    checkHealth();
+    const interval = setInterval(checkHealth, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
   const [searchQuery, setSearchQuery] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const categoriesScrollRef = useRef<HTMLDivElement>(null);
+
+  const scrollCategories = (direction: 'left' | 'right') => {
+    if (categoriesScrollRef.current) {
+      const { scrollLeft, clientWidth } = categoriesScrollRef.current;
+      const scrollAmount = clientWidth * 0.6;
+      const targetScroll = direction === 'left' ? scrollLeft - scrollAmount : scrollLeft + scrollAmount;
+      categoriesScrollRef.current.scrollTo({
+        left: targetScroll,
+        behavior: 'smooth'
+      });
+    }
+  };
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,15 +84,28 @@ export default function Navbar({
     <header className="sticky top-0 z-40 w-full bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm" id="store-header">
       {/* Top micro-bar */}
       <div className="bg-emerald-900 text-white py-1.5 px-4 text-xs font-medium text-center flex justify-between items-center max-w-7xl mx-auto rounded-b-lg">
-        <div className="flex items-center gap-1.5">
-          <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-pulse" />
-          <span>✨ Free delivery on all orders above Rs. 2,000 across Pakistan!</span>
+          <div className="flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-pulse" />
+            <span>✨ Free delivery on all orders above Rs. 2,000 across Pakistan!</span>
+          </div>
+          <div className="hidden sm:flex items-center gap-4">
+            <span>📍 samananbad, Lahore</span>
+            <span>📞 +92 333 4488205</span>
+            {/* DB status indicator */}
+            <span className={
+              dbStatus === 'connected'
+                ? 'flex items-center gap-1 text-emerald-200'
+                : dbStatus === 'error'
+                ? 'flex items-center gap-1 text-red-300'
+                : 'flex items-center gap-1 text-gray-300'
+            }>
+              {dbStatus === 'connected' && <svg className="w-2 h-2" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" fill="currentColor" /></svg>}
+              {dbStatus === 'error' && <svg className="w-2 h-2" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" fill="currentColor" /></svg>}
+              {dbStatus === 'loading' && <svg className="w-2 h-2 animate-spin" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" /></svg>}
+              <span>{dbStatus === 'connected' ? 'DB: OK' : dbStatus === 'error' ? 'DB: ERROR' : 'DB: …'}</span>
+            </span>
+          </div>
         </div>
-        <div className="hidden sm:flex items-center gap-4">
-          <span>📍 samananbad, Lahore</span>
-          <span>📞 +92 333 4488205</span>
-        </div>
-      </div>
 
       {/* Main Bar */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between gap-4">
@@ -169,9 +218,22 @@ export default function Navbar({
       </div>
 
       {/* Category Horizontal Bar / Mobile Menu */}
-      <div className="border-t border-gray-50 bg-gray-50/50">
+      <div className="border-t border-gray-50 bg-gray-50/50 relative group/nav">
+        {/* Left Scroll Button */}
+        <button
+          type="button"
+          onClick={() => scrollCategories('left')}
+          className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-emerald-800 hover:text-emerald-950 p-1.5 rounded-full shadow-md border border-gray-100 transition z-10 hidden md:group-hover/nav:block"
+          aria-label="Scroll categories left"
+        >
+          <ChevronLeft className="w-4 h-4" />
+        </button>
+
         {/* Desktop category navigation */}
-        <div className="hidden md:flex items-center gap-1 max-w-7xl mx-auto px-6 overflow-x-auto scrollbar-none py-1.5">
+        <div
+          ref={categoriesScrollRef}
+          className="hidden md:flex items-center gap-1 max-w-7xl mx-auto px-10 overflow-x-auto scrollbar-thin py-1.5 scroll-smooth"
+        >
           <button
             onClick={() => onSelectCategory('')}
             className={`px-3 py-1.5 rounded-lg text-xs font-bold transition whitespace-nowrap ${
@@ -196,6 +258,17 @@ export default function Navbar({
             </button>
           ))}
         </div>
+
+        {/* Right Scroll Button */}
+        <button
+          type="button"
+          onClick={() => scrollCategories('right')}
+          className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-emerald-800 hover:text-emerald-950 p-1.5 rounded-full shadow-md border border-gray-100 transition z-10 hidden md:group-hover/nav:block"
+          aria-label="Scroll categories right"
+        >
+          <ChevronRight className="w-4 h-4" />
+        </button>
+      
 
         {/* Mobile menu and search */}
         {mobileMenuOpen && (

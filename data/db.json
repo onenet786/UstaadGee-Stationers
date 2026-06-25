@@ -1,0 +1,699 @@
+{
+  "users": [
+    {
+      "id": "u-admin",
+      "email": "admin@ustaadgee.com",
+      "name": "Ustaad Admin",
+      "password": "admin123_ustaad",
+      "role": "admin",
+      "phone": "+923334488205",
+      "createdAt": "2026-06-25T01:21:18.793Z"
+    },
+    {
+      "id": "u-cust",
+      "email": "customer@test.com",
+      "name": "Ahmed Khan",
+      "password": "customer_pass",
+      "role": "customer",
+      "phone": "+923001234567",
+      "createdAt": "2026-06-25T01:21:18.793Z"
+    }
+  ],
+  "categories": [
+    {
+      "id": "cat-1",
+      "name": "School Stationery",
+      "slug": "school-stationery",
+      "description": "Essential items for school students",
+      "image": "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&auto=format&fit=crop&q=60",
+      "active": true
+    },
+    {
+      "id": "cat-2",
+      "name": "Office Stationery",
+      "slug": "office-stationery",
+      "description": "Professional supplies for corporate spaces",
+      "image": "https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=400&auto=format&fit=crop&q=60",
+      "active": true
+    },
+    {
+      "id": "cat-3",
+      "name": "Pens & Writing",
+      "slug": "pens-writing",
+      "description": "Ballpoints, fountain pens, markers, and highlighters",
+      "image": "https://images.unsplash.com/photo-1583485088034-697b5bc54ccd?w=400&auto=format&fit=crop&q=60",
+      "active": true
+    },
+    {
+      "id": "cat-4",
+      "name": "Notebooks & Registers",
+      "slug": "notebooks-registers",
+      "description": "Registers, journals, and spirals",
+      "image": "https://images.unsplash.com/photo-1517842645767-c639042777db?w=400&auto=format&fit=crop&q=60",
+      "active": true
+    },
+    {
+      "id": "cat-5",
+      "name": "Art Supplies",
+      "slug": "art-supplies",
+      "description": "Colors, brushes, canvases, and sketchbooks",
+      "image": "https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=400&auto=format&fit=crop&q=60",
+      "active": true
+    },
+    {
+      "id": "cat-6",
+      "name": "Computer Accessories",
+      "slug": "computer-accessories",
+      "description": "Calculators, USBs, and key peripherals",
+      "image": "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=400&auto=format&fit=crop&q=60",
+      "active": true
+    },
+    {
+      "id": "cat-7",
+      "name": "Printer & Photocopy Supplies",
+      "slug": "printer-photocopy-supplies",
+      "description": "Ink cartridges, toners, and paper reams",
+      "image": "https://images.unsplash.com/photo-1612815154858-60aa4c59eaa6?w=400&auto=format&fit=crop&q=60",
+      "active": true
+    },
+    {
+      "id": "cat-8",
+      "name": "Printing Services",
+      "slug": "printing-services",
+      "description": "Custom photocopy, black & white / color prints, laminations",
+      "image": "https://images.unsplash.com/photo-1563245372-f21724e3856d?w=400&auto=format&fit=crop&q=60",
+      "active": true
+    },
+    {
+      "id": "cat-9",
+      "name": "Exam & Test Supplies",
+      "slug": "exam-test-supplies",
+      "description": "Boards, geometry boxes, compass sets",
+      "image": "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=400&auto=format&fit=crop&q=60",
+      "active": true
+    },
+    {
+      "id": "cat-10",
+      "name": "Gifts & Novelties",
+      "slug": "gifts-novelties",
+      "description": "Wrappings, cards, custom gift items",
+      "image": "https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=400&auto=format&fit=crop&q=60",
+      "active": true
+    }
+  ],
+  "brands": [
+    {
+      "id": "b-1",
+      "name": "Piano",
+      "slug": "piano",
+      "logo": "",
+      "active": true
+    },
+    {
+      "id": "b-2",
+      "name": "Dollar",
+      "slug": "dollar",
+      "logo": "",
+      "active": true
+    },
+    {
+      "id": "b-3",
+      "name": "Dux",
+      "slug": "dux",
+      "logo": "",
+      "active": true
+    },
+    {
+      "id": "b-4",
+      "name": "Pelikan",
+      "slug": "pelikan",
+      "logo": "",
+      "active": true
+    },
+    {
+      "id": "b-5",
+      "name": "Double A",
+      "slug": "double-a",
+      "logo": "",
+      "active": true
+    },
+    {
+      "id": "b-6",
+      "name": "Casio",
+      "slug": "casio",
+      "logo": "",
+      "active": true
+    },
+    {
+      "id": "b-7",
+      "name": "Deli",
+      "slug": "deli",
+      "logo": "",
+      "active": true
+    },
+    {
+      "id": "b-8",
+      "name": "Faber-Castell",
+      "slug": "faber-castell",
+      "logo": "",
+      "active": true
+    }
+  ],
+  "products": [
+    {
+      "id": "p-1",
+      "name": "Bahadur 2B Lead Pencils (Pack of 12)",
+      "slug": "bahadur-2b-lead-pencils-pack-of-12",
+      "sku": "PCL-BAH-2B-12",
+      "barcode": "8964000100234",
+      "categoryId": "cat-1",
+      "brandId": "b-8",
+      "description": "High-quality 2B lead pencils with smooth graphite core. Break-resistant lead, perfect for school examinations, sketching, and daily homework. Non-toxic wood.",
+      "images": [
+        "https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?w=500&auto=format&fit=crop&q=80"
+      ],
+      "costPrice": 120,
+      "salePrice": 180,
+      "discountPrice": 160,
+      "stockQuantity": 120,
+      "minStockAlert": 15,
+      "unitType": "box",
+      "variants": [
+        {
+          "name": "Standard Lead",
+          "stock": 120
+        }
+      ],
+      "active": true,
+      "featured": true,
+      "createdAt": "2026-06-25T01:21:14.707Z"
+    },
+    {
+      "id": "p-2",
+      "name": "Dux Container Sharpener (D-99)",
+      "slug": "dux-container-sharpener-d-99",
+      "sku": "SHP-DUX-D99",
+      "barcode": "8964000100412",
+      "categoryId": "cat-1",
+      "brandId": "b-3",
+      "description": "Ergonomic pencil sharpener with a durable plastic shavings container. High-carbon steel blades ensure precise and clean sharpening every time without breaking lead.",
+      "images": [
+        "https://images.unsplash.com/photo-1596495578065-6e0763fa1141?w=500&auto=format&fit=crop&q=80"
+      ],
+      "costPrice": 12,
+      "salePrice": 25,
+      "stockQuantity": 250,
+      "minStockAlert": 30,
+      "unitType": "piece",
+      "variants": [
+        {
+          "name": "Neon Blue",
+          "stock": 100
+        },
+        {
+          "name": "Neon Green",
+          "stock": 80
+        },
+        {
+          "name": "Neon Pink",
+          "stock": 70
+        }
+      ],
+      "active": true,
+      "featured": false,
+      "createdAt": "2026-06-25T01:21:18.768Z"
+    },
+    {
+      "id": "p-3",
+      "name": "Piano Single Line Ballpoint (Blue, Box of 10)",
+      "slug": "piano-single-line-ballpoint-blue-box-of-10",
+      "sku": "PEN-PIA-SL-BLUE",
+      "barcode": "8964000110822",
+      "categoryId": "cat-3",
+      "brandId": "b-1",
+      "description": "Pakistan’s favorite smooth writing pen. 0.7mm Swiss Tungsten Carbide tip. Oil-based German ink providing skip-free writing and clean letters. Ideal for school and exam boards.",
+      "images": [
+        "https://images.unsplash.com/photo-1583485088034-697b5bc54ccd?w=500&auto=format&fit=crop&q=80"
+      ],
+      "costPrice": 90,
+      "salePrice": 150,
+      "discountPrice": 130,
+      "stockQuantity": 80,
+      "minStockAlert": 10,
+      "unitType": "box",
+      "variants": [
+        {
+          "name": "Blue Ink",
+          "stock": 50
+        },
+        {
+          "name": "Black Ink",
+          "stock": 30
+        }
+      ],
+      "active": true,
+      "featured": true,
+      "createdAt": "2026-06-25T01:21:18.768Z"
+    },
+    {
+      "id": "p-4",
+      "name": "Dollar SP-10 Fountain Pen",
+      "slug": "dollar-sp-10-fountain-pen",
+      "sku": "PEN-DOL-SP10",
+      "barcode": "8964000110990",
+      "categoryId": "cat-3",
+      "brandId": "b-2",
+      "description": "Timeless calligraphy and school writing tool. Features an ink-window to check remaining volume, an ergonomic grip, and a stainless steel iridium-point fine nib. Easily refillable.",
+      "images": [
+        "https://images.unsplash.com/photo-1569003339405-ea396a5a8a90?w=500&auto=format&fit=crop&q=80"
+      ],
+      "costPrice": 55,
+      "salePrice": 85,
+      "stockQuantity": 4,
+      "minStockAlert": 10,
+      "unitType": "piece",
+      "variants": [
+        {
+          "name": "Traditional Blue",
+          "stock": 2
+        },
+        {
+          "name": "Ruby Red",
+          "stock": 2
+        }
+      ],
+      "active": true,
+      "featured": true,
+      "createdAt": "2026-06-25T01:21:18.768Z"
+    },
+    {
+      "id": "p-5",
+      "name": "UstaadGee Premium Single Line Register (200 Pages)",
+      "slug": "ustaadgee-premium-single-line-register-200-pages",
+      "sku": "REG-UG-SL-200",
+      "categoryId": "cat-4",
+      "description": "Custom manufactured UstaadGee house register. Premium 75gsm white offset paper that prevents ink bleeding or ghosting. Strong card binding with protective outer plastic laminate.",
+      "images": [
+        "https://images.unsplash.com/photo-1517842645767-c639042777db?w=500&auto=format&fit=crop&q=80"
+      ],
+      "costPrice": 180,
+      "salePrice": 280,
+      "discountPrice": 250,
+      "stockQuantity": 45,
+      "minStockAlert": 8,
+      "unitType": "piece",
+      "variants": [
+        {
+          "name": "Single Line (Ruled)",
+          "stock": 30
+        },
+        {
+          "name": "Four Line (English)",
+          "stock": 15
+        }
+      ],
+      "active": true,
+      "featured": true,
+      "createdAt": "2026-06-25T01:21:18.768Z"
+    },
+    {
+      "id": "p-6",
+      "name": "Deli Water Color Cake Set (12 Colors with Brush)",
+      "slug": "deli-water-color-cake-set-12-colors-with-brush",
+      "sku": "ART-DEL-WCC12",
+      "barcode": "6921734910231",
+      "categoryId": "cat-5",
+      "brandId": "b-7",
+      "description": "Vibrant, high-opacity watercolor cakes in a sturdy travel palette box. Excellent mixing ratios, non-toxic, and washes easily from clothes and hands. Comes with a premium nylon brush.",
+      "images": [
+        "https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=500&auto=format&fit=crop&q=80"
+      ],
+      "costPrice": 320,
+      "salePrice": 490,
+      "stockQuantity": 40,
+      "minStockAlert": 5,
+      "unitType": "box",
+      "variants": [
+        {
+          "name": "12 Colors",
+          "stock": 40
+        }
+      ],
+      "active": true,
+      "featured": false,
+      "createdAt": "2026-06-25T01:21:18.768Z"
+    },
+    {
+      "id": "p-7",
+      "name": "Double A A4 Paper Ream (80gsm, 500 Sheets)",
+      "slug": "double-a-a4-paper-ream-80gsm-500-sheets",
+      "sku": "REAM-AA-A4-80G",
+      "barcode": "8850123019021",
+      "categoryId": "cat-7",
+      "brandId": "b-5",
+      "description": "High-quality photocopying and laser printing ream. Smooth sheet surfaces produce clear, high-contrast, double-sided copies. Acid-free premium pulp preventing jams.",
+      "images": [
+        "https://images.unsplash.com/photo-1612815154858-60aa4c59eaa6?w=500&auto=format&fit=crop&q=80"
+      ],
+      "costPrice": 1150,
+      "salePrice": 1550,
+      "discountPrice": 1450,
+      "stockQuantity": 65,
+      "minStockAlert": 10,
+      "unitType": "ream",
+      "variants": [
+        {
+          "name": "A4 size 80gsm",
+          "stock": 65
+        }
+      ],
+      "active": true,
+      "featured": true,
+      "createdAt": "2026-06-25T01:21:18.768Z"
+    },
+    {
+      "id": "p-8",
+      "name": "Casio fx-991ES Plus 2nd Gen Scientific Calculator",
+      "slug": "casio-fx-991es-plus-2nd-gen-scientific-calculator",
+      "sku": "CAL-CAS-991ES",
+      "barcode": "4971850092341",
+      "categoryId": "cat-6",
+      "brandId": "b-6",
+      "description": "Authentic engineering & science calculator with natural textbook display (displays formula/equations exactly as in textbooks). 417 functions. Dual power source (Solar & Battery).",
+      "images": [
+        "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=500&auto=format&fit=crop&q=80"
+      ],
+      "costPrice": 2800,
+      "salePrice": 3800,
+      "discountPrice": 3490,
+      "stockQuantity": 15,
+      "minStockAlert": 3,
+      "unitType": "piece",
+      "variants": [
+        {
+          "name": "Standard Black",
+          "stock": 15
+        }
+      ],
+      "active": true,
+      "featured": true,
+      "createdAt": "2026-06-25T01:21:18.768Z"
+    },
+    {
+      "id": "p-9",
+      "name": "Standard Photocopying (Black & White, A4)",
+      "slug": "standard-photocopying-black-white-a4",
+      "sku": "SERV-PHOTO-A4-BW",
+      "categoryId": "cat-8",
+      "description": "High-speed, double-sided crisp black and white photocopy on 75gsm premium paper ream. Specify special requests like booklet format or double-sided in instructions.",
+      "images": [
+        "https://images.unsplash.com/photo-1563245372-f21724e3856d?w=500&auto=format&fit=crop&q=80"
+      ],
+      "costPrice": 2,
+      "salePrice": 5,
+      "stockQuantity": 9999,
+      "minStockAlert": 0,
+      "unitType": "piece",
+      "variants": [
+        {
+          "name": "Single-Sided",
+          "stock": 9999
+        },
+        {
+          "name": "Double-Sided",
+          "stock": 9999
+        }
+      ],
+      "active": true,
+      "featured": false,
+      "createdAt": "2026-06-25T01:21:18.768Z"
+    }
+  ],
+  "orders": [],
+  "orderItems": [],
+  "paymentLogs": [],
+  "coupons": [
+    {
+      "code": "WELCOME10",
+      "type": "percentage",
+      "value": 10,
+      "minOrderValue": 500,
+      "expiryDate": "2027-12-31",
+      "usageLimit": 100,
+      "usageCount": 0,
+      "active": true
+    },
+    {
+      "code": "AZADI500",
+      "type": "fixed",
+      "value": 500,
+      "minOrderValue": 3000,
+      "expiryDate": "2026-08-31",
+      "usageLimit": 50,
+      "usageCount": 0,
+      "active": true
+    },
+    {
+      "code": "FREEBYU",
+      "type": "percentage",
+      "value": 100,
+      "minOrderValue": 10000,
+      "expiryDate": "2027-01-01",
+      "usageLimit": 10,
+      "usageCount": 0,
+      "active": true
+    }
+  ],
+  "banners": [
+    {
+      "id": "bn-1",
+      "image": "https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?w=1200&auto=format&fit=crop&q=80",
+      "title": "Back To School Sale!",
+      "subtitle": "Get flat 15% discount on all school stationery kits.",
+      "link": "/category/school-stationery",
+      "position": "home_hero",
+      "active": true
+    },
+    {
+      "id": "bn-2",
+      "image": "https://images.unsplash.com/photo-1506784983877-45594efa4cbe?w=1200&auto=format&fit=crop&q=80",
+      "title": "Premium Office Supplies",
+      "subtitle": "Organize your desk with imported files, staplers, and paper reams.",
+      "link": "/category/office-stationery",
+      "position": "home_hero",
+      "active": true
+    },
+    {
+      "id": "bn-3",
+      "image": "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=600&auto=format&fit=crop&q=80",
+      "title": "Double A Paper Reams",
+      "subtitle": "A4 Premium 80gsm sheets for crisp photocopying.",
+      "link": "/category/printer-photocopy-supplies",
+      "position": "home_promo",
+      "active": true
+    }
+  ],
+  "deliveryAreas": [
+    {
+      "id": "da-1",
+      "city": "Lahore",
+      "areaName": "Samanabad (Local Area)",
+      "charges": 80,
+      "estDays": "Same Day",
+      "active": true
+    },
+    {
+      "id": "da-2",
+      "city": "Lahore",
+      "areaName": "Poonch Road & Ichhra",
+      "charges": 100,
+      "estDays": "Same Day",
+      "active": true
+    },
+    {
+      "id": "da-3",
+      "city": "Lahore",
+      "areaName": "Gulberg & Model Town",
+      "charges": 150,
+      "estDays": "1-2 Days",
+      "active": true
+    },
+    {
+      "id": "da-4",
+      "city": "Lahore",
+      "areaName": "DHA & Johar Town",
+      "charges": 200,
+      "estDays": "1-2 Days",
+      "active": true
+    },
+    {
+      "id": "da-5",
+      "city": "Karachi",
+      "areaName": "All Areas (Courier)",
+      "charges": 250,
+      "estDays": "3-4 Days",
+      "active": true
+    },
+    {
+      "id": "da-6",
+      "city": "Islamabad",
+      "areaName": "All Areas (Courier)",
+      "charges": 250,
+      "estDays": "2-3 Days",
+      "active": true
+    },
+    {
+      "id": "da-7",
+      "city": "Faisalabad",
+      "areaName": "All Areas (Courier)",
+      "charges": 220,
+      "estDays": "2-3 Days",
+      "active": true
+    },
+    {
+      "id": "da-8",
+      "city": "Rawalpindi",
+      "areaName": "All Areas (Courier)",
+      "charges": 250,
+      "estDays": "2-3 Days",
+      "active": true
+    },
+    {
+      "id": "da-9",
+      "city": "Lahore",
+      "areaName": "Shop Pickup (Poonch Road)",
+      "charges": 0,
+      "estDays": "Ready in 2 Hours",
+      "active": true
+    }
+  ],
+  "messages": [],
+  "wishlist": [],
+  "reviews": [],
+  "settings": {
+    "shopName": "UstaadGee Stationers",
+    "phone": "+923334488205",
+    "whatsApp": "+923334488205",
+    "address": "Poonch Road, Samanabad, Lahore",
+    "city": "Lahore",
+    "currency": "PKR",
+    "freeDeliveryMin": 2000,
+    "codActive": true,
+    "cardActive": true,
+    "easypaisa": {
+      "active": true,
+      "merchantId": "99824",
+      "storeId": "UST_ONLINE",
+      "secureSalt": "ep_salt_6628901",
+      "hashKey": "ep_hash_key_88301",
+      "sandboxMode": true
+    },
+    "jazzcash": {
+      "active": true,
+      "merchantId": "MC_83021",
+      "secureSalt": "jc_salt_3902183",
+      "sandboxMode": true
+    },
+    "bankTransfer": {
+      "active": true,
+      "bankName": "Meezan Bank Limited",
+      "accountTitle": "UstaadGee Stationers",
+      "iban": "PK49MEZN00340103456721",
+      "accountNumber": "00340103456721"
+    }
+  },
+  "auditLogs": [
+    {
+      "userId": "u-admin",
+      "userEmail": "admin@ustaadgee.com",
+      "userRole": "admin",
+      "action": "User Login",
+      "details": "User successfully logged into the website as admin",
+      "id": "al-1782351645048",
+      "createdAt": "2026-06-25T01:40:45.048Z"
+    },
+    {
+      "id": "al-1",
+      "userId": "u-admin",
+      "userEmail": "admin@ustaadgee.com",
+      "userRole": "admin",
+      "action": "System Initialization",
+      "details": "UstaadGee Stationers SQLite-JSON relational store initialized with categories, brands, default delivery areas, and settings.",
+      "createdAt": "2026-06-25T01:21:18.793Z"
+    }
+  ],
+  "inventoryMovements": [
+    {
+      "id": "im-p-1",
+      "productId": "p-1",
+      "quantity": 120,
+      "type": "purchase",
+      "notes": "Opening initial seed stock",
+      "createdAt": "2026-06-25T01:21:18.793Z"
+    },
+    {
+      "id": "im-p-2",
+      "productId": "p-2",
+      "quantity": 250,
+      "type": "purchase",
+      "notes": "Opening initial seed stock",
+      "createdAt": "2026-06-25T01:21:18.793Z"
+    },
+    {
+      "id": "im-p-3",
+      "productId": "p-3",
+      "quantity": 80,
+      "type": "purchase",
+      "notes": "Opening initial seed stock",
+      "createdAt": "2026-06-25T01:21:18.793Z"
+    },
+    {
+      "id": "im-p-4",
+      "productId": "p-4",
+      "quantity": 4,
+      "type": "purchase",
+      "notes": "Opening initial seed stock",
+      "createdAt": "2026-06-25T01:21:18.793Z"
+    },
+    {
+      "id": "im-p-5",
+      "productId": "p-5",
+      "quantity": 45,
+      "type": "purchase",
+      "notes": "Opening initial seed stock",
+      "createdAt": "2026-06-25T01:21:18.794Z"
+    },
+    {
+      "id": "im-p-6",
+      "productId": "p-6",
+      "quantity": 40,
+      "type": "purchase",
+      "notes": "Opening initial seed stock",
+      "createdAt": "2026-06-25T01:21:18.794Z"
+    },
+    {
+      "id": "im-p-7",
+      "productId": "p-7",
+      "quantity": 65,
+      "type": "purchase",
+      "notes": "Opening initial seed stock",
+      "createdAt": "2026-06-25T01:21:18.794Z"
+    },
+    {
+      "id": "im-p-8",
+      "productId": "p-8",
+      "quantity": 15,
+      "type": "purchase",
+      "notes": "Opening initial seed stock",
+      "createdAt": "2026-06-25T01:21:18.794Z"
+    },
+    {
+      "id": "im-p-9",
+      "productId": "p-9",
+      "quantity": 9999,
+      "type": "purchase",
+      "notes": "Opening initial seed stock",
+      "createdAt": "2026-06-25T01:21:18.794Z"
+    }
+  ]
+}

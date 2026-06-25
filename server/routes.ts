@@ -2,26 +2,30 @@ import { Router, Request, Response } from 'express';
 import { db } from './db.ts';
 import { PaymentProcessor } from './payment.ts';
 import { OrderStatus, PaymentStatus, PaymentMethod, UnitType, ProductVariant } from '../src/types.ts';
+import bcrypt from 'bcryptjs';
 
 export const apiRouter = Router();
 
 export interface AuthenticatedRequest extends Request {
   user?: any;
+  body?: any;
+  params?: any;
 }
 
 // Middleware to parse simple token auth
-const getAuthUser = (req: Request) => {
+const getAuthUser = async (req: Request) => {
   const token = req.headers.authorization;
   if (!token) return null;
   // Format is "Bearer <userId>" in our simulated frontend
   const userId = token.replace('Bearer ', '').trim();
-  return db.users.findFirst(u => u.id === userId);
+  return await db.users.findFirst(u => u.id === userId);
 };
 
-const requireAdmin = (req: AuthenticatedRequest, res: Response, next: any) => {
-  const user = getAuthUser(req);
+const requireAdmin = async (req: AuthenticatedRequest, res: Response, next: any) => {
+  const user = await getAuthUser(req);
   if (!user || user.role !== 'admin') {
-    return res.status(403).json({ error: 'Access denied. Administrator privileges required.' });
+    // Unauthorized or forbidden
+    return res.status(401).json({ error: 'Access denied. Administrator privileges required.' });
   }
   req.user = user;
   next();
@@ -31,16 +35,37 @@ const requireAdmin = (req: AuthenticatedRequest, res: Response, next: any) => {
 // AUTHENTICATION ENDPOINTS
 // ==========================================
 
+apiRouter.get('/health', async (req: Request, res: Response) => {
+  try {
+    await db.query('SELECT 1');
+    res.json({ db: 'connected' });
+  } catch (err) {
+    console.error('Health check DB error:', err);
+    res.status(500).json({ db: 'error', error: err.message || 'Unknown' });
+  }
+});
+
 apiRouter.post('/auth/login', async (req: Request, res: Response) => {
   const { email, password } = req.body;
-  
-  const user = db.users.findFirst(u => u.email.toLowerCase() === email.toLowerCase());
+  console.log('Login payload:', { email, password });
+  const user = await db.users.findFirst(u => u.email.toLowerCase() === email.toLowerCase());
+  console.log('User lookup - found:', !!user, 'stored hash:', user?.password);
   if (!user) {
     return res.status(401).json({ error: 'Account not found with this email address.' });
   }
 
-  // Simplified secure match for preview mode, works for hashed or plain passwords
-  if (user.password !== password) {
+  // Compare hashed password using bcrypt (fallback to plaintext for legacy accounts)
+  let passwordMatches = false;
+  try {
+    passwordMatches = await bcrypt.compare(password, user.password);
+  } catch (_) { /* ignore */ }
+  console.log('Password compare result:', passwordMatches);
+  if (!passwordMatches && user.password === password) {
+    passwordMatches = true;
+    const newHash = await bcrypt.hash(password, 10);
+    await db.users.update(user.id, { password: newHash });
+  }
+  if (!passwordMatches) {
     return res.status(401).json({ error: 'Incorrect password. Please try again.' });
   }
 
@@ -57,6 +82,8 @@ apiRouter.post('/auth/login', async (req: Request, res: Response) => {
   res.json({ user: safeUser, token: `Bearer ${user.id}` });
 });
 
+
+
 apiRouter.post('/auth/register', async (req: Request, res: Response) => {
   const { email, password, name, phone } = req.body;
 
@@ -64,14 +91,16 @@ apiRouter.post('/auth/register', async (req: Request, res: Response) => {
     return res.status(400).json({ error: 'Email, password, and name are required fields.' });
   }
 
-  const exists = db.users.findFirst(u => u.email.toLowerCase() === email.toLowerCase());
+  const exists = await db.users.findFirst(u => u.email.toLowerCase() === email.toLowerCase());
   if (exists) {
     return res.status(400).json({ error: 'An account with this email already exists.' });
   }
 
+  // Hash password before storing
+  const hashedPassword = await bcrypt.hash(password, 10);
   const newUser = await db.users.create({
     email: email.toLowerCase(),
-    password,
+    password: hashedPassword,
     name,
     role: 'customer',
     phone
@@ -89,8 +118,8 @@ apiRouter.post('/auth/register', async (req: Request, res: Response) => {
   res.json({ user: safeUser, token: `Bearer ${newUser.id}` });
 });
 
-apiRouter.get('/auth/me', (req: Request, res: Response) => {
-  const user = getAuthUser(req);
+apiRouter.get('/auth/me', async (req: Request, res: Response) => {
+  const user = await getAuthUser(req);
   if (!user) {
     return res.status(401).json({ error: 'Unauthenticated session' });
   }
@@ -102,25 +131,29 @@ apiRouter.get('/auth/me', (req: Request, res: Response) => {
 // STOREFRONT CATALOG ENDPOINTS
 // ==========================================
 
-apiRouter.get('/categories', (req, res) => {
-  res.json(db.categories.findMany());
+apiRouter.get('/categories', async (req, res) => {
+  const list = await db.categories.findMany();
+  res.json(list);
 });
 
-apiRouter.get('/brands', (req, res) => {
-  res.json(db.brands.findMany());
+apiRouter.get('/brands', async (req, res) => {
+  const list = await db.brands.findMany();
+  res.json(list);
 });
 
-apiRouter.get('/banners', (req, res) => {
-  res.json(db.banners.findMany());
+apiRouter.get('/banners', async (req, res) => {
+  const list = await db.banners.findMany();
+  res.json(list);
 });
 
-apiRouter.get('/delivery-areas', (req, res) => {
-  res.json(db.deliveryAreas.findMany());
+apiRouter.get('/delivery-areas', async (req, res) => {
+  const list = await db.deliveryAreas.findMany();
+  res.json(list);
 });
 
-apiRouter.get('/settings', (req, res) => {
+apiRouter.get('/settings', async (req, res) => {
   // Public settings mask secrets
-  const privateSettings = db.settings.get();
+  const privateSettings = await db.settings.get();
   const publicSettings = {
     shopName: privateSettings.shopName,
     phone: privateSettings.phone,
@@ -144,14 +177,15 @@ apiRouter.get('/settings', (req, res) => {
 });
 
 // GET list of active storefront products with complex filters
-apiRouter.get('/products', (req: Request, res: Response) => {
-  let list = db.products.findMany();
+apiRouter.get('/products', async (req: Request, res: Response) => {
+  let list = await db.products.findMany();
   
   const { category, brand, search, minPrice, maxPrice, availability, featured } = req.query;
 
   // 1. Category Filter (by slug or ID)
   if (category) {
-    const catObj = db.categories.findManyWithInactive().find(c => c.slug === category || c.id === category);
+    const cats = await db.categories.findManyWithInactive();
+    const catObj = cats.find(c => c.slug === category || c.id === category);
     if (catObj) {
       list = list.filter(p => p.categoryId === catObj.id);
     }
@@ -159,7 +193,8 @@ apiRouter.get('/products', (req: Request, res: Response) => {
 
   // 2. Brand Filter
   if (brand) {
-    const brandObj = db.brands.findManyWithInactive().find(b => b.slug === brand || b.id === brand);
+    const brands = await db.brands.findManyWithInactive();
+    const brandObj = brands.find(b => b.slug === brand || b.id === brand);
     if (brandObj) {
       list = list.filter(p => p.brandId === brandObj.id);
     }
@@ -199,19 +234,22 @@ apiRouter.get('/products', (req: Request, res: Response) => {
 });
 
 // GET single product detail
-apiRouter.get('/products/:slug', (req, res) => {
+apiRouter.get('/products/:slug', async (req, res) => {
   const { slug } = req.params;
-  const product = db.products.findFirst(p => p.slug === slug && p.active);
+  const product = await db.products.findFirst(p => p.slug === slug && p.active);
   if (!product) {
     return res.status(404).json({ error: 'Product not found.' });
   }
   
-  const category = db.categories.findManyWithInactive().find(c => c.id === product.categoryId);
-  const brand = db.brands.findManyWithInactive().find(b => b.id === product.brandId);
-  const reviews = db.reviews.findByProduct(product.id);
+  const categories = await db.categories.findManyWithInactive();
+  const brands = await db.brands.findManyWithInactive();
+  const category = categories.find(c => c.id === product.categoryId);
+  const brand = brands.find(b => b.id === product.brandId);
+  const reviews = await db.reviews.findByProduct(product.id);
 
   // Find related products (same category)
-  const related = db.products.findMany()
+  const allProducts = await db.products.findMany();
+  const related = allProducts
     .filter(p => p.categoryId === product.categoryId && p.id !== product.id)
     .slice(0, 4);
 
@@ -229,11 +267,11 @@ apiRouter.get('/products/:slug', (req, res) => {
 // ==========================================
 
 // Validate Coupon
-apiRouter.post('/coupons/validate', (req, res) => {
+apiRouter.post('/coupons/validate', async (req, res) => {
   const { code, cartSubtotal } = req.body;
   if (!code) return res.status(400).json({ error: 'Coupon code is required.' });
 
-  const coupon = db.coupons.findFirst(code);
+  const coupon = await db.coupons.findFirst(code);
   if (!coupon) {
     return res.status(404).json({ error: 'Invalid coupon code.' });
   }
@@ -258,10 +296,10 @@ apiRouter.post('/coupons/validate', (req, res) => {
 
 // Place Order
 apiRouter.post('/orders', async (req: Request, res: Response) => {
-  const { 
+  const {
     customerName, customerEmail, customerPhone,
     shippingAddress, shippingCity, shippingArea, deliveryAreaId,
-    couponCode, notes, cartItems 
+    couponCode, notes, cartItems
   } = req.body;
 
   if (!customerName || !customerPhone || !shippingAddress || !deliveryAreaId || !cartItems || cartItems.length === 0) {
@@ -269,7 +307,7 @@ apiRouter.post('/orders', async (req: Request, res: Response) => {
   }
 
   // Resolve user session if any
-  const user = getAuthUser(req);
+  const user = await getAuthUser(req);
   const customerId = user ? user.id : 'guest';
 
   // Calculate prices
@@ -277,7 +315,7 @@ apiRouter.post('/orders', async (req: Request, res: Response) => {
   const itemsToCreate: any[] = [];
 
   for (const item of cartItems) {
-    const prod = db.products.findFirst(p => p.id === item.productId && p.active);
+    const prod = await db.products.findFirst(p => p.id === item.productId && p.active);
     if (!prod) {
       return res.status(400).json({ error: `Product with ID ${item.productId} is not available.` });
     }
@@ -313,7 +351,7 @@ apiRouter.post('/orders', async (req: Request, res: Response) => {
   // Apply Coupon Discount
   let discount = 0;
   if (couponCode) {
-    const coupon = db.coupons.findFirst(couponCode);
+    const coupon = await db.coupons.findFirst(couponCode);
     if (coupon && subtotal >= coupon.minOrderValue && coupon.usageCount < coupon.usageLimit) {
       if (coupon.type === 'percentage') {
         discount = Math.round((subtotal * coupon.value) / 100);
@@ -325,12 +363,13 @@ apiRouter.post('/orders', async (req: Request, res: Response) => {
   }
 
   // Get delivery charge
-  const deliveryArea = db.deliveryAreas.findManyWithInactive().find(da => da.id === deliveryAreaId);
+  const deliveryAreas = await db.deliveryAreas.findManyWithInactive();
+  const deliveryArea = deliveryAreas.find(da => da.id === deliveryAreaId);
   if (!deliveryArea) {
     return res.status(400).json({ error: 'Invalid delivery area/city selected.' });
   }
 
-  const settings = db.settings.get();
+  const settings = await db.settings.get();
   // Free delivery logic
   let deliveryCharges = deliveryArea.charges;
   if (subtotal >= settings.freeDeliveryMin && deliveryCharges > 0) {
@@ -372,20 +411,20 @@ apiRouter.post('/orders', async (req: Request, res: Response) => {
 });
 
 // Track Order by Number
-apiRouter.get('/orders/track/:number', (req, res) => {
+apiRouter.get('/orders/track/:number', async (req, res) => {
   const { number } = req.params;
-  const order = db.orders.findFirst(o => o.orderNumber.toUpperCase() === number.toUpperCase());
+  const order = await db.orders.findFirst(o => o.orderNumber.toUpperCase() === number.toUpperCase());
   if (!order) {
     return res.status(404).json({ error: 'Order not found. Please verify the order number (e.g. UG-2026-XXXX)' });
   }
-  const items = db.orders.findItems(order.id);
+  const items = await db.orders.findItems(order.id);
   res.json({ order, items });
 });
 
 // Customer History
-apiRouter.get('/orders/customer/:customerId', (req, res) => {
+apiRouter.get('/orders/customer/:customerId', async (req, res) => {
   const { customerId } = req.params;
-  const list = db.orders.findManyByCustomer(customerId);
+  const list = await db.orders.findManyByCustomer(customerId);
   res.json(list);
 });
 
@@ -409,18 +448,19 @@ apiRouter.post('/orders/:id/upload-proof', async (req, res) => {
 // Submit review
 apiRouter.post('/reviews', async (req, res) => {
   const { productId, rating, comment } = req.body;
-  const user = getAuthUser(req);
+  const user = await getAuthUser(req);
   if (!user) {
     return res.status(401).json({ error: 'You must be logged in to leave reviews.' });
   }
 
   const newReview = await db.reviews.create({
-    productId,
-    userId: user.id,
-    userName: user.name,
-    rating: Number(rating),
-    comment
-  });
+      productId,
+      userId: user.id,
+      userName: user.name,
+      rating: Number(rating),
+      comment,
+      status: 'pending'
+    });
 
   res.json({ success: true, review: newReview, message: 'Thank you! Your review has been submitted successfully.' });
 });
@@ -446,10 +486,10 @@ apiRouter.post('/contact', async (req, res) => {
 // Wishlist toggle
 apiRouter.post('/wishlist/toggle', async (req, res) => {
   const { productId } = req.body;
-  const user = getAuthUser(req);
+  const user = await getAuthUser(req);
   if (!user) return res.status(401).json({ error: 'Login required' });
 
-  const wishlist = db.wishlist.getUserWishlist(user.id);
+  const wishlist = await db.wishlist.getUserWishlist(user.id);
   const exists = wishlist.some(w => w.productId === productId);
   if (exists) {
     await db.wishlist.remove(user.id, productId);
@@ -460,12 +500,13 @@ apiRouter.post('/wishlist/toggle', async (req, res) => {
   }
 });
 
-apiRouter.get('/wishlist', (req, res) => {
-  const user = getAuthUser(req);
+apiRouter.get('/wishlist', async (req, res) => {
+  const user = await getAuthUser(req);
   if (!user) return res.status(401).json({ error: 'Login required' });
 
-  const wishlist = db.wishlist.getUserWishlist(user.id);
-  const products = wishlist.map(w => db.products.findFirst(p => p.id === w.productId)).filter(Boolean);
+  const wishlist = await db.wishlist.getUserWishlist(user.id);
+  const allProducts = await db.products.findManyWithInactive();
+  const products = wishlist.map(w => allProducts.find(p => p.id === w.productId)).filter(Boolean);
   res.json(products);
 });
 
@@ -474,11 +515,11 @@ apiRouter.get('/wishlist', (req, res) => {
 // ==========================================
 
 // Render a responsive HTML simulated payment portal inside iframe/tab
-apiRouter.get('/payments/:gateway/simulate-gateway', (req: Request, res: Response) => {
+apiRouter.get('/payments/:gateway/simulate-gateway', async (req: Request, res: Response) => {
   const { gateway } = req.params;
   const { orderId, amount, txnId, storeId } = req.query;
 
-  const order = db.orders.findFirst(o => o.id === String(orderId));
+  const order = await db.orders.findFirst(o => o.id === String(orderId));
   if (!order) {
     return res.send('<h3>Critical Error: Order reference not found inside gateway.</h3>');
   }
@@ -691,21 +732,24 @@ apiRouter.post('/payments/:gateway/callback', async (req: Request, res: Response
 // ADMIN DASHBOARD & REPORTS (PROTECTED)
 // ==========================================
 
-apiRouter.get('/admin/stats', requireAdmin, (req, res) => {
-  const stats = db.reports.getDashboardStats();
+apiRouter.get('/admin/stats', requireAdmin, async (req, res) => {
+  const stats = await db.reports.getDashboardStats();
   res.json(stats);
 });
 
-apiRouter.get('/admin/audit-logs', requireAdmin, (req, res) => {
-  res.json(db.auditLogs.findMany());
+apiRouter.get('/admin/audit-logs', requireAdmin, async (req, res) => {
+  const logs = await db.auditLogs.findMany();
+  res.json(logs);
 });
 
-apiRouter.get('/admin/inventory-movements', requireAdmin, (req, res) => {
-  res.json(db.inventoryMovements.findMany());
+apiRouter.get('/admin/inventory-movements', requireAdmin, async (req, res) => {
+  const movements = await db.inventoryMovements.findMany();
+  res.json(movements);
 });
 
-apiRouter.get('/admin/messages', requireAdmin, (req, res) => {
-  res.json(db.messages.findMany());
+apiRouter.get('/admin/messages', requireAdmin, async (req, res) => {
+  const msgs = await db.messages.findMany();
+  res.json(msgs);
 });
 
 apiRouter.put('/admin/messages/:id', requireAdmin, async (req, res) => {
@@ -715,8 +759,9 @@ apiRouter.put('/admin/messages/:id', requireAdmin, async (req, res) => {
   res.json({ success: true, message: updated });
 });
 
-apiRouter.get('/admin/settings', requireAdmin, (req, res) => {
-  res.json(db.settings.get());
+apiRouter.get('/admin/settings', requireAdmin, async (req, res) => {
+  const settings = await db.settings.get();
+  res.json(settings);
 });
 
 apiRouter.put('/admin/settings', requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
@@ -732,8 +777,9 @@ apiRouter.put('/admin/settings', requireAdmin, async (req: AuthenticatedRequest,
 });
 
 // Admin product lists
-apiRouter.get('/admin/products', requireAdmin, (req, res) => {
-  res.json(db.products.findManyWithInactive());
+apiRouter.get('/admin/products', requireAdmin, async (req, res) => {
+  const list = await db.products.findManyWithInactive();
+  res.json(list);
 });
 
 apiRouter.post('/admin/products', requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
@@ -779,7 +825,7 @@ apiRouter.post('/admin/products', requireAdmin, async (req: AuthenticatedRequest
 
 apiRouter.put('/admin/products/:id', requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
   const { id } = req.params;
-  const oldProduct = db.products.findManyWithInactive().find(p => p.id === id);
+  const oldProduct = await db.products.findManyWithInactive().then(list => list.find(p => p.id === id));
   if (!oldProduct) return res.status(404).json({ error: 'Product not found' });
 
   const updated = await db.products.update(id, req.body);
@@ -797,7 +843,7 @@ apiRouter.put('/admin/products/:id', requireAdmin, async (req: AuthenticatedRequ
 
 apiRouter.delete('/admin/products/:id', requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
   const { id } = req.params;
-  const product = db.products.findManyWithInactive().find(p => p.id === id);
+  const product = await db.products.findManyWithInactive().then(list => list.find(p => p.id === id));
   if (!product) return res.status(404).json({ error: 'Product not found' });
 
   await db.products.delete(id);
@@ -849,12 +895,16 @@ apiRouter.put('/admin/categories/:id', requireAdmin, async (req: Request, res: R
 });
 
 // Admin Orders Management
-apiRouter.get('/admin/orders', requireAdmin, (req, res) => {
-  const orders = db.orders.findMany();
-  const enhancedOrders = orders.map(o => ({
-    ...o,
-    items: db.orders.findItems(o.id)
-  }));
+apiRouter.get('/admin/orders', requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
+  // fetch orders (async)
+  const orders = await db.orders.findMany();
+  // enhance each order with its items (async)
+  const enhancedOrders = await Promise.all(
+    orders.map(async (o) => ({
+      ...o,
+      items: await db.orders.findItems(o.id),
+    }))
+  );
   res.json(enhancedOrders);
 });
 
@@ -862,7 +912,7 @@ apiRouter.put('/admin/orders/:id/status', requireAdmin, async (req: Authenticate
   const { id } = req.params;
   const { status, paymentStatus, notes } = req.body;
 
-  const order = db.orders.findFirst(o => o.id === id);
+  const order = await db.orders.findFirst(o => o.id === id);
   if (!order) return res.status(404).json({ error: 'Order not found' });
 
   const updated = await db.orders.updateStatus(id, status as OrderStatus, paymentStatus as PaymentStatus, notes);
